@@ -28,8 +28,7 @@ namespace BleLab.Commands.Characteristic
                 if (_deviceController.ConnectedDevice.DeviceId != CharacteristicInfo.Service.Device.DeviceId)
                     throw new InvalidOperationException("Targeted device not connected");
 
-                var result = _deviceController.ConnectedDevice.GetGattServicesForUuidAsync(CharacteristicInfo.Service.Uuid).GetResults();
-                return result.Services[0].GetCharacteristicsForUuidAsync(CharacteristicInfo.Uuid).GetResults().Characteristics[0];
+                return _deviceController.ConnectedDevice.GetGattService(CharacteristicInfo.Service.Uuid).GetCharacteristics(CharacteristicInfo.Uuid)[0];
             }
         }
     }
