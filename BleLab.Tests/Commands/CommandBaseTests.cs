@@ -66,10 +66,12 @@ namespace BleLab.Tests.Commands
             // Prepare
             var invoked = false;
 
-            var command = new TestCommand();
-            command.ExecuteAction = () =>
+            var command = new TestCommand
             {
-                invoked = true;
+                ExecuteAction = () =>
+                {
+                    invoked = true;
+                }
             };
 
             // Execute
@@ -85,10 +87,12 @@ namespace BleLab.Tests.Commands
             // Prepare
             var invoked = 0;
 
-            var command = new TestCommand();
-            command.ExecuteAction = () =>
+            var command = new TestCommand
             {
-                invoked++;
+                ExecuteAction = () =>
+                {
+                    invoked++;
+                }
             };
 
             // Execute
@@ -105,8 +109,11 @@ namespace BleLab.Tests.Commands
             // Prepare
             var exception = new Exception();
 
-            var command = new TestCommand();
-            command.ExecuteAction = () => throw exception;
+            TestCommand testCommand = new TestCommand
+            {
+                ExecuteAction = () => throw exception
+            };
+            TestCommand command = testCommand;
 
             // Execute
             await command.ExecuteAsync().ConfigureAwait(true);

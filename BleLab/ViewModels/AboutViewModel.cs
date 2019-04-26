@@ -9,9 +9,9 @@ namespace BleLab.ViewModels
     {
         public string Version => GetAppVersion();
 
-        public void ForkMe()
+        public async System.Threading.Tasks.Task ForkMeAsync()
         {
-            Launcher.LaunchUriAsync(new Uri(@"https://github.com/IanSavchenko/BleLab"));
+            await Launcher.LaunchUriAsync(new Uri(@"https://github.com/IanSavchenko/BleLab"));
         }
 
         private static string GetAppVersion()

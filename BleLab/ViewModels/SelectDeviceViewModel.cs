@@ -86,9 +86,9 @@ namespace BleLab.ViewModels
             RefreshDevicesList();
         }
 
-        public void OpenBluetoothSettings()
+        public async void OpenBluetoothSettings()
         {
-            Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:bluetooth"));
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:bluetooth"));
         }
 
         protected override void OnActivate()

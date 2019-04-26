@@ -18,7 +18,7 @@ namespace BleLab.Commands.Characteristic
 
         protected override async Task DoExecuteAsync()
         {
-            SubscriptionNotFound = !_subscriptionService.Unsubscribe(CharacteristicInfo);
+            await Task.Run(()=> SubscriptionNotFound = !_subscriptionService.Unsubscribe(CharacteristicInfo));
         }
     }
 }

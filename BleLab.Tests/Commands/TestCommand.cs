@@ -20,7 +20,7 @@ namespace BleLab.Tests.Commands
 
         protected override async Task DoExecuteAsync()
         {
-            ExecuteAction?.Invoke();
+            await Task.Run(()=>ExecuteAction?.Invoke());
         }
     }
 }

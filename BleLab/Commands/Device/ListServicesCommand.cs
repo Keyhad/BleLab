@@ -33,7 +33,7 @@ namespace BleLab.Commands.Device
                 throw new InvalidOperationException("Device not connected");
 
             Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceServicesResult gattServices = await device.GetGattServicesAsync();
-            Services = await _infoManager.GetAllServicesInfo(_deviceInfo, gattServices.Services).ConfigureAwait(false);
+            Services = _infoManager.GetAllServicesInfo(_deviceInfo, gattServices.Services);
         }
     }
 }

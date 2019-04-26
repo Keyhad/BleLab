@@ -22,7 +22,6 @@ namespace BleLab.ViewModels
         private readonly Dictionary<ServiceViewModel, List<CharacteristicInfoViewModel>> _servicesCharacteristics = new Dictionary<ServiceViewModel, List<CharacteristicInfoViewModel>>();
         private readonly CommandRunner _commandRunner;
         private readonly IEventAggregator _eventAggregator;
-        private bool _showPane;
         private bool _connected;
         private bool _showServices = true;
         private bool _isConnecting;
@@ -122,6 +121,10 @@ namespace BleLab.ViewModels
             }
         }
 
+        public bool ShowPane => ShowPane1;
+
+        public bool ShowPane1 { get; }
+
         public async void Disconnect()
         {
             await _commandRunner.Enqueue(new DisconnectDeviceCommand()).AsTask().ConfigureAwait(true);
@@ -167,7 +170,7 @@ namespace BleLab.ViewModels
 
                 _connected = true;
                 _deviceInfo.IsNew = false;
-                _deviceInfo.SaveAsync();
+                await _deviceInfo.SaveAsync();
                 NotifyOfPropertyChange(nameof(MacAddress));
 
                 _servicesCharacteristics.Clear();
@@ -260,8 +263,8 @@ namespace BleLab.ViewModels
         private async Task ShowCouldntConnectMessage()
         {
             var md = new MessageDialog("Could not connect to device. Check if it is reachable and charged and app has permissions.", "Error");
-            md.Commands.Add(new UICommand("Bluetooth settings", x => { Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:bluetooth")); }));
-            md.Commands.Add(new UICommand("Permissions settings", x => { Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-customdevices")); }));
+            md.Commands.Add(new UICommand("Bluetooth settings", async x => { await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:bluetooth")); }));
+            md.Commands.Add(new UICommand("Permissions settings", async x => { await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-customdevices")); }));
             md.Commands.Add(new UICommand("Ok"));
             md.DefaultCommandIndex = 2;
             await md.ShowAsync();

@@ -46,7 +46,7 @@ namespace BleLab.Services
             return result;
         }
 
-        public async Task<ICollection<ServiceInfo>> GetAllServicesInfo(DeviceInfo deviceInfo, IEnumerable<GattDeviceService> services)
+        public ICollection<ServiceInfo> GetAllServicesInfo(DeviceInfo deviceInfo, IEnumerable<GattDeviceService> services)
         {
             var result = new List<ServiceInfo>();
             var allSaved = GetAllSavedServices(deviceInfo);
@@ -56,9 +56,11 @@ namespace BleLab.Services
 
                 if (serviceInfo == null)
                 {
-                    serviceInfo = new ServiceInfo();
-                    serviceInfo.Device = deviceInfo;
-                    serviceInfo.Uuid = gattDeviceService.Uuid;
+                    serviceInfo = new ServiceInfo
+                    {
+                        Device = deviceInfo,
+                        Uuid = gattDeviceService.Uuid
+                    };
 
                     var gattServiceInfo = _gattInformationProvider.GetServiceInfo(serviceInfo.Uuid);
                     if (gattServiceInfo != null)
@@ -76,7 +78,7 @@ namespace BleLab.Services
 
                     SaveService(serviceInfo);
                 }
-                
+
                 serviceInfo.Initialize(this);
 
                 result.Add(serviceInfo);
@@ -85,7 +87,7 @@ namespace BleLab.Services
             return result;
         }
 
-        public async Task<ICollection<CharacteristicInfo>> GetAllCharacteristicsInfo(ServiceInfo serviceInfo, IEnumerable<GattCharacteristic> characteristics)
+        public ICollection<CharacteristicInfo> GetAllCharacteristicsInfo(ServiceInfo serviceInfo, IEnumerable<GattCharacteristic> characteristics)
         {
             var result = new List<CharacteristicInfo>();
             var allSaved = GetAllSavedCharacteristics(serviceInfo);
@@ -95,12 +97,14 @@ namespace BleLab.Services
 
                 if (characteristicInfo == null)
                 {
-                    characteristicInfo = new CharacteristicInfo();
-                    characteristicInfo.Service = serviceInfo;
-                    characteristicInfo.Uuid = gattCharacteristic.Uuid;
-                    characteristicInfo.ReadDisplayFormat = BytesDisplayFormat.Decimal;
-                    characteristicInfo.WriteDisplayFormat = BytesDisplayFormat.Auto;
-                    characteristicInfo.NotificationDisplayFormat = BytesDisplayFormat.Decimal;
+                    characteristicInfo = new CharacteristicInfo
+                    {
+                        Service = serviceInfo,
+                        Uuid = gattCharacteristic.Uuid,
+                        ReadDisplayFormat = BytesDisplayFormat.Decimal,
+                        WriteDisplayFormat = BytesDisplayFormat.Auto,
+                        NotificationDisplayFormat = BytesDisplayFormat.Decimal
+                    };
 
                     var gattInfo = _gattInformationProvider.GetCharacteristicInfo(serviceInfo.Uuid, characteristicInfo.Uuid);
                     if (gattInfo != null)
@@ -118,7 +122,7 @@ namespace BleLab.Services
 
                     SaveCharacteristic(characteristicInfo);
                 }
-                
+
                 // not a db property
                 characteristicInfo.Properties = gattCharacteristic.CharacteristicProperties;
                 characteristicInfo.AttributeHandle = gattCharacteristic.AttributeHandle;
@@ -132,7 +136,7 @@ namespace BleLab.Services
 
             return result;
         }
-        
+
         public void SaveDevice(DeviceInfo deviceInfo)
         {
             lock (_dbLock)

@@ -18,7 +18,7 @@ namespace BleLab.Commands.Characteristic
 
         protected override async Task DoExecuteAsync()
         {
-            AlreadySubscribed = !_subscriptionService.Subscribe(CharacteristicInfo);
+            await Task.Run(() => AlreadySubscribed = !_subscriptionService.Subscribe(CharacteristicInfo));
         }
     }
 }
