@@ -32,7 +32,7 @@ namespace BleLab.Commands.Device
                 throw new InvalidOperationException("Command executed against not connected device.");
 
             // ToDo: cache services on controller
-            var characteristics = _deviceController.ConnectedDevice.GetGattService(_serviceInfo.Uuid).GetAllCharacteristics().ToList();
+            IReadOnlyList<Windows.Devices.Bluetooth.GenericAttributeProfile.GattCharacteristic> characteristics = _deviceController.ConnectedDevice.GetGattServicesForUuidAsync(_serviceInfo.Uuid).GetResults().Services.AsEnumerable().First().GetAllCharacteristics();
             Characteristics = await _infoManager.GetAllCharacteristicsInfo(_serviceInfo, characteristics).ConfigureAwait(false);
         }
     }

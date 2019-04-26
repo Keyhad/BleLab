@@ -17,9 +17,6 @@ namespace BleLab.Services
         private readonly GattInformationProvider _gattInformationProvider;
         private readonly object _dbLock = new object();
 
-        //public const string DevicesCollectionName = "devices";
-        //public const string ServicesCollectionName = "services";
-
         private readonly string _dataBaseFilePath = Path.Combine(Path.Combine(ApplicationData.Current.LocalFolder.Path, "Devices.db"));
 
         public InfoManager(GattInformationProvider gattInformationProvider)
