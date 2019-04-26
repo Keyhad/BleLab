@@ -31,9 +31,9 @@ namespace BleLab.Commands.Device
             
             if (device == null)
                 throw new InvalidOperationException("Device not connected");
-            
-            var services = device.GattServices.ToList();
-            Services = await _infoManager.GetAllServicesInfo(_deviceInfo, services).ConfigureAwait(false);
+
+            Windows.Devices.Bluetooth.GenericAttributeProfile.GattDeviceServicesResult gattServices = await device.GetGattServicesAsync();
+            Services = await _infoManager.GetAllServicesInfo(_deviceInfo, gattServices.Services).ConfigureAwait(false);
         }
     }
 }
