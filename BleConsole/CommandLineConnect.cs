@@ -9,7 +9,7 @@ namespace BleConsole
     [Verb("connect", HelpText = "Connect to BLE device.")]
     class CommandLineConnect
     {
-        internal static object RunCommand(CommandLineConnect opts)
+        internal static int RunCommand(CommandLineConnect opts)
         {
             Log.Information("CommandLineConnect.RunCommand");
             return 0;
