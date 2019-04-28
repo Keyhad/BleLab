@@ -1,7 +1,6 @@
 ﻿using System;
 using Serilog;
 using CommandLine;
-using System.Collections.Generic;
 
 namespace BleDotNet
 {
