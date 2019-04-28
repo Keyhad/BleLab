@@ -1,6 +1,7 @@
 ﻿using System;
 using Serilog;
 using CommandLine;
+using System.Collections.Generic;
 
 namespace BleDotNet
 {
@@ -16,11 +17,11 @@ namespace BleDotNet
 
             Log.Information("Hello, world!");
 
-            Console.WriteLine("Hello World!");
-
-            CommandLine.Parser.Default.ParseArguments<CommandLineOptions>(args)
-               .WithParsed<CommandLineOptions>(opts => RunOptionsAndReturnExitCode(opts))
-               .WithNotParsed<CommandLineOptions>((errs) => HandleParseError(errs));
+            CommandLine.Parser.Default.ParseArguments<CommandLineListDevices, CommandLineConnect>(args)
+               .MapResult(
+               (CommandLineListDevices opts) => CommandLineListDevices.RunCommand(opts),
+               (CommandLineConnect opts) => CommandLineConnect.RunCommand(opts),
+               errs => 1);
 
             Log.CloseAndFlush();
             Console.ReadKey();
