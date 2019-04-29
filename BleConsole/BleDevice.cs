@@ -25,11 +25,21 @@ namespace BleConsole
             set { _advertisement.Advertisement.LocalName = value; }
         }
 
+        public short SignalStrength
+        {
+            get { return _advertisement.RawSignalStrengthInDBm; }
+        }
+
+        public BluetoothLEAdvertisementType AdvertisementType
+        {
+            get { return _advertisement.AdvertisementType; }
+        }
+
         public ulong Id { get { return _advertisement.BluetoothAddress; } }
 
         public override string ToString()
         {
-            return string.Format("{0:X16}, {1}, {2}", Id, Name, _advertisement.RawSignalStrengthInDBm, _advertisement.AdvertisementType);
+            return string.Format("{0:X16}, {1}DBm, {2}, {3}", Id, SignalStrength, AdvertisementType, Name);
         }
     }
 }
