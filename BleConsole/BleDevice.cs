@@ -26,5 +26,10 @@ namespace BleConsole
         }
 
         public ulong Id { get { return _advertisement.BluetoothAddress; } }
+
+        public override string ToString()
+        {
+            return string.Format("{0:X16}, {1}, {2}", Id, Name, _advertisement.RawSignalStrengthInDBm, _advertisement.AdvertisementType);
+        }
     }
 }

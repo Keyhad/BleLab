@@ -53,7 +53,7 @@ namespace BleConsole
             Log.Information("Number of devices found: {0}", _devices.Count);
             foreach (KeyValuePair<ulong, BleDevice> bd in _devices)
             {
-                Log.Information("Print: {0}, {1}", bd.Value.Id, bd.Value.Name);
+                Log.Information("{0}", bd.Value.ToString());
             }
         }
     }

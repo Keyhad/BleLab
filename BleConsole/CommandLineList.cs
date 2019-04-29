@@ -56,7 +56,7 @@ namespace BleConsole
         private static void OnAdvertisementReceived(BluetoothLEAdvertisementWatcher watcher, BluetoothLEAdvertisementReceivedEventArgs eventArgs)
         {
             // Tell the user we see an advertisement and print some properties
-            Log.Information("Advertisement: {0}, {1}", eventArgs.BluetoothAddress, eventArgs.Advertisement.LocalName);
+            Log.Information("Advertisement: {0:X16}, {1}", eventArgs.BluetoothAddress, eventArgs.Advertisement.LocalName);
             BleCollection.GetInstance().AddOrUpdateDevice(new BleDevice(eventArgs));
         }
     }
