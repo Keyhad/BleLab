@@ -2,18 +2,29 @@
 using Serilog;
 using CommandLine;
 using System.Windows;
+using Serilog.Context;
+using System.Reflection;
+using System.IO;
 
 namespace BleConsole
 {
     public class Program
     {
+        private const string OutputTemplateFormat = "[{Timestamp:HH:mm:ss.fff} {Level:u3}]{Message:lj}{NewLine}{Exception}";
+
         [STAThread]
         public static void Main()
         {
+            //String applicationLogPath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)
+            //    + "\\" + Assembly.GetExecutingAssembly().FullName + "\\log";
+
+            string applicationLogPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\..\\log.txt";
+
             Log.Logger = new LoggerConfiguration()
                             .MinimumLevel.Debug()
-                            .WriteTo.Console()
-                            .WriteTo.File("logs\\myapp.txt", rollingInterval: RollingInterval.Day)
+                            .WriteTo.Debug(outputTemplate:OutputTemplateFormat)
+                            .WriteTo.Console(outputTemplate: OutputTemplateFormat)
+                            .WriteTo.File(applicationLogPath, rollingInterval: RollingInterval.Day)
                             .CreateLogger();
 
             Log.Information("BleConsole ... Begin");
@@ -35,9 +46,9 @@ namespace BleConsole
         {
             Log.Information("RunCommand ... {0}", String.Join(" ", args));
 
-            CommandLine.Parser.Default.ParseArguments<CommandLineListDevices, CommandLineConnect>(args)
+            CommandLine.Parser.Default.ParseArguments<CommandLineList, CommandLineConnect>(args)
                .MapResult(
-               (CommandLineListDevices opts) => CommandLineListDevices.RunCommandAsync(opts),
+               (CommandLineList opts) => CommandLineList.RunCommandAsync(opts),
                (CommandLineConnect opts) => CommandLineConnect.RunCommand(opts),
                errs => 1);
         }
