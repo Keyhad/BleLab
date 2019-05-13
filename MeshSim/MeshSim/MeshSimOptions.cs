@@ -25,13 +25,15 @@ namespace MeshSim
 
         [Value(0, 
             MetaName = "size", 
+            Default = 5,
             HelpText = "Number of nodes.")]
-        public long? Size { get; set; }
+        public int? Size { get; set; }
 
         [Value(1,
             MetaName = "interval",
+            Default = 1000,
             HelpText = "Reporting interval in ms.")]
-        public long? Interval { get; set; }
+        public int? Interval { get; set; }
 
     }
 }

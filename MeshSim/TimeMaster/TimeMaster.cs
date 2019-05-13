@@ -8,7 +8,7 @@ namespace TimeMaster
 
         public TimeMaster(long offset = 0)
         {
-            ticks = offset;
+            ticks = DateTime.Now.Ticks + offset;
         }
 
         public static long getTime()

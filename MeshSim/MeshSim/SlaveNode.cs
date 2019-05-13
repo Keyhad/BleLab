@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Serilog;
+using TimeMasterDotNet;
 
 namespace MeshSim
 {
@@ -13,30 +14,57 @@ namespace MeshSim
         private Thread thread;
         private int interval;
         private ulong id;
+        private TimeMaster timeMaster;
 
         public void SlaveThread()
         {
             Log.Information("SlaveNode {0} starts", ToString());
 
-            DateTime.Now.Ticks
-            while(thread.ThreadState == ThreadState.Running)
+            Random rnd = new Random();
+            long startDelay = rnd.Next(5000);
+
+            timeMaster = new TimeMaster(startDelay);
+            while (thread.ThreadState == ThreadState.Running)
             {
-                Thread.Sleep(interval);
+                if (timeMaster.isTimeout(interval))
+                {
+                    timeMaster.reset();
+                    Log.Information("SlaveNode {0} time to ... ", ToString());
+                }
+                Thread.Sleep(10);
             }
         }
 
         public SlaveNode(ulong id, int interval)
         {
             this.id = id;
+            this.interval = interval;
             ThreadStart threadStart = new ThreadStart(SlaveThread);
             thread = new Thread(threadStart);
             thread.Name = ToString();
+        }
+
+        public void Start()
+        {
             thread.Start();
+        }
+
+        public void Stop()
+        {
+            thread.Abort();
+        }
+
+        public void WaitToStop()
+        {
+            while (thread.IsAlive)
+            {
+                Thread.Sleep(10);
+            }
         }
 
         override public string ToString()
         {
-            return string.Format("S{0:12X}", id);
+            return string.Format("S{0:X12}", id);
         }
     }
 }

@@ -23,7 +23,6 @@ namespace MeshSim
                 .WithParsed<MeshSimOptions>(opts => RunOptionsAndReturnExitCode(opts))
                 .WithNotParsed<MeshSimOptions>((errs) => HandleParseError(errs));
 
-            Console.ReadLine();
             Log.Information("\nMeshSim Stopped ... @ {0}\n", DateTime.Now);
         }
 
@@ -32,13 +31,15 @@ namespace MeshSim
             return -1;
         }
 
-        private static Thread mainThread;
-
         private static int RunOptionsAndReturnExitCode(MeshSimOptions opts)
         {
-            mainThread = new Thread(startThread);
-            mainThread.Name = "mainThread";
-            mainThread.Start();
+            int size = opts.Size.HasValue ? opts.Size.Value : 5;
+            int interval = opts.Interval.HasValue ? opts.Interval.Value : 1000;
+            NodeManager nodeManager = new NodeManager(size, interval);
+            nodeManager.Start();
+            Console.ReadLine();
+            nodeManager.Stop();
+            nodeManager.WaitToStop();
             return 0;
         }
 
