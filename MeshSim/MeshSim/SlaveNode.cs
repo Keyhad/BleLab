@@ -13,11 +13,8 @@ namespace MeshSim
     {
         private Thread thread;
         private int interval;
-        private ulong id;
+        public ulong Id;
         private TimeMaster timeMaster;
-
-        public delegate void ListenToAdvertisements();
-        ListenToAdvertisements listenToAdvertisements;
 
         List<MeasurementPost> measurementsList = new List<MeasurementPost>();
         List<MeasurementPost> advertisementList = new List<MeasurementPost>();
@@ -49,21 +46,26 @@ namespace MeshSim
                     startMeasuring();
                     advertiseNode();
 
-                    listenToAdvertisements?.Invoke();
+                    //ListenToAdvertisementsEvent(this.advertisementList);
                 }
                 Thread.Sleep(10);
             }
         }
 
-        private void listenToAdvertises()
+        public void ListenToAdvertisements(List<MeasurementPost> advertisementList)
         {
-
+            foreach (MeasurementPost post in advertisementList)
+            {
+                if (post.Id != this.Id)
+                {
+                    measurementsList.Add(post);
+                }
+            }
         }
 
         private void advertiseNode()
         {
             if (advertisementList.Count > 5) {
-                advertisementList.Count
             }
         }
 
@@ -71,12 +73,12 @@ namespace MeshSim
         {
             Random rnd = new Random();
             int value = rnd.Next(0x0FFF);
-            measurementsList.Add(new MeasurementPost(id, value));
+            measurementsList.Add(new MeasurementPost(Id, value));
         }
 
         public SlaveNode(ulong id, int interval)
         {
-            this.id = id;
+            this.Id = id;
             this.interval = interval;
 
             Random rnd = new Random();
@@ -112,7 +114,7 @@ namespace MeshSim
 
         override public string ToString()
         {
-            return string.Format("S{0:X12}", id);
+            return string.Format("S{0:X12}", Id);
         }
     }
 }

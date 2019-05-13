@@ -9,14 +9,14 @@ namespace MeshSim
 {
     public class MeasurementPost
     {
-        ulong id;
+        public ulong Id;
         int value;
         long timeStamp;
 
         public MeasurementPost(ulong id, int value)
         {
             this.timeStamp = TimeMaster.getTime();
-            this.id = id;
+            this.Id = id;
             this.value = value;
         }
     }
