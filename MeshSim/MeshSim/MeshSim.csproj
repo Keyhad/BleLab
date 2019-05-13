@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MasterNode.cs" />
+    <Compile Include="MeasurementPost.cs" />
     <Compile Include="MeshSimOptions.cs" />
     <Compile Include="NodeManager.cs" />
     <Compile Include="Program.cs" />
