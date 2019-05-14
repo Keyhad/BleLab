@@ -31,9 +31,16 @@ namespace MeshSim
         /// Position on z axis
         /// </summary>
         public int Z { get; set; }
+        /// <summary>
+        /// list of measurement for advertising
+        /// </summary>
+        public List<MeasurementPost> AdvertisementList { get => advertisementList; set => advertisementList = value; }
 
         public void SlaveThread()
         {
+            int startDelay = MeshSimTools.random.Next(5000);
+            Thread.Sleep(startDelay);
+
             Log.Information("SlaveNode {0} starts", ToString());
 
             while (thread.ThreadState == ThreadState.Running)
@@ -52,6 +59,19 @@ namespace MeshSim
             }
         }
 
+        internal IEnumerable<ulong> getNeighbours()
+        {
+            List<ulong> ids = new List<ulong>();
+
+            ids.Add(Id - 2);
+            ids.Add(Id - 1);
+            ids.Add(Id + 1);
+            ids.Add(Id + 2);
+            ids.Add(Id + 3);
+
+            return ids;
+        }
+
         public void ListenToAdvertisements(List<MeasurementPost> advertisementList)
         {
             foreach (MeasurementPost post in advertisementList)
@@ -61,18 +81,22 @@ namespace MeshSim
                     measurementsList.Add(post);
                 }
             }
+
+            while (measurementsList.Count > 10)
+            {
+                measurementsList.RemoveAt(0);
+            }
         }
 
         private void advertiseNode()
         {
-            if (advertisementList.Count > 5) {
+            if (AdvertisementList.Count > 5) {
             }
         }
 
         private void startMeasuring()
         {
-            Random rnd = new Random();
-            int value = rnd.Next(0x0FFF);
+            int value = MeshSimTools.random.Next(0x0FFF);
             measurementsList.Add(new MeasurementPost(Id, value));
         }
 
@@ -80,10 +104,7 @@ namespace MeshSim
         {
             this.Id = id;
             this.interval = interval;
-
-            Random rnd = new Random();
-            long startDelay = rnd.Next(5000);
-            timeMaster = new TimeMaster(startDelay);
+            timeMaster = new TimeMaster();
 
             X = (int)id;
             Y = 0;
@@ -114,7 +135,7 @@ namespace MeshSim
 
         override public string ToString()
         {
-            return string.Format("S{0:X12}", Id);
+            return string.Format("S{0:X12}, {1}", Id, measurementsList.Count);
         }
     }
 }

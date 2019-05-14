@@ -14,7 +14,7 @@ namespace MeshSim
         static void Main(string[] args)
         {
             Log.Logger = new LoggerConfiguration()
-                .WriteTo.Console()
+                .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
 
             Log.Information("\nMeshSim Started ... @ {0}\n", DateTime.Now);
@@ -36,10 +36,10 @@ namespace MeshSim
             int size = opts.Size.HasValue ? opts.Size.Value : 5;
             int interval = opts.Interval.HasValue ? opts.Interval.Value : 1000;
             NodeManager nodeManager = new NodeManager(size, interval);
-            nodeManager.Start();
+            MasterNode masterNode = new MasterNode(nodeManager);
+            masterNode.Start();
             Console.ReadLine();
-            nodeManager.Stop();
-            nodeManager.WaitToStop();
+            masterNode.Stop();
             return 0;
         }
 
