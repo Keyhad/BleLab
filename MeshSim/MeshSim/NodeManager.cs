@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeMasterDotNet;
 
 namespace MeshSim
 {
     public class NodeManager
     {
-        public readonly Dictionary<ulong, SlaveNode> nodesDictionary = new Dictionary<ulong, SlaveNode>();
+        public SlaveNode[] Nodes { get; }
 
         public NodeManager(int size = 5, int interval = 1000)
         {
+            Nodes = new SlaveNode[size];
             for (int i = 0; i < size; i++)
             {
-                ulong id = (ulong)(0x1000 + i);
-                nodesDictionary[id] = new SlaveNode(id, interval);
+                Nodes[i] = new SlaveNode(i, interval);
             }
         }
 
         public void Start()
         {
-            foreach (SlaveNode node in nodesDictionary.Values)
+            foreach (SlaveNode node in Nodes)
             {
                 node.Start();
             }
@@ -29,7 +30,7 @@ namespace MeshSim
 
         public void Stop()
         {
-            foreach (SlaveNode node in nodesDictionary.Values)
+            foreach (SlaveNode node in Nodes)
             {
                 node.Stop();
             }
@@ -37,7 +38,7 @@ namespace MeshSim
 
         internal void WaitToStop()
         {
-            foreach (SlaveNode node in nodesDictionary.Values)
+            foreach (SlaveNode node in Nodes)
             {
                 node.WaitToStop();
             }

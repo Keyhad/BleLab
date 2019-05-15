@@ -7,17 +7,37 @@ using TimeMasterDotNet;
 
 namespace MeshSim
 {
-    public class MeasurementPost
+    public class MeasurementPost: IComparable, IEquatable<MeasurementPost>
     {
-        public ulong Id;
+        public int Id { get; set; }
         int value;
         long timeStamp;
 
-        public MeasurementPost(ulong id, int value)
+        public MeasurementPost(int id, int value, long timeStamp)
         {
-            this.timeStamp = TimeMaster.getTime();
+            this.timeStamp = timeStamp;
             this.Id = id;
             this.value = value;
+        }
+
+        override public string ToString()
+        {
+            return string.Format("M{0:X4}, {1}, {2}", Id, timeStamp, value);
+        }
+
+        public int CompareTo(object obj)
+        {
+            if (obj is MeasurementPost post)
+            {
+                return timeStamp.CompareTo(post.timeStamp);
+            }
+
+            return -1;
+        }
+
+        public bool Equals(MeasurementPost other)
+        {
+            return (timeStamp == other.timeStamp) && (Id == other.Id);
         }
     }
 }

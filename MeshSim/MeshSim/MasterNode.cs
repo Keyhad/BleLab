@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,40 +12,65 @@ namespace MeshSim
 {
     public class MasterNode
     {
+        private const int ADVERTISING_INTERVAL = 3000;
+        private const int REPORTING_INTERVAL = 10000;
+
         private Thread thread;
         private readonly int interval;
-        private ulong id;
-        private TimeMaster timeMaster;
+        private int id;
+        private TimeMaster simulatingTimer;
+        private TimeMaster reportingTimer;
         private NodeManager nodeManager;
 
         public void MasterThread()
         {
+            simulatingTimer = new TimeMaster();
+            reportingTimer = new TimeMaster();
+
             Log.Information("MasterNode {0} starts", ToString());
 
-            timeMaster = new TimeMaster();
             while (thread.ThreadState == ThreadState.Running)
             {
-                if (timeMaster.isTimeout(interval))
+                if (simulatingTimer.isTimeout(ADVERTISING_INTERVAL))
                 {
-                    timeMaster.reset();
-                    Log.Information("MasterNode {0} time to process queues", ToString());
-                    foreach (SlaveNode slaveNode in nodeManager.nodesDictionary.Values)
+                    simulatingTimer.reset();
+                    foreach (SlaveNode slaveNode in nodeManager.Nodes)
                     {
-                        foreach(ulong neighbour in slaveNode.getNeighbours())
+                        slaveNode.SyncClock(simulatingTimer.BaseTime);
+                        foreach(int neighbour in slaveNode.getNeighbours())
                         {
-                            SlaveNode target;
-                            if (nodeManager.nodesDictionary.TryGetValue(neighbour, out target))
+                            if (neighbour >= 0 && neighbour < nodeManager.Nodes.Length)
                             {
-                                target.ListenToAdvertisements(slaveNode.AdvertisementList);
+                                SlaveNode target = nodeManager.Nodes[neighbour];
+                                target.ListenToAdvertisements(slaveNode.Advertisements.ToArray());
                             }
                         }
+                        slaveNode.Advertisements = new ConcurrentQueue<MeasurementPost>();
                     }
                 }
+
+                if (reportingTimer.isTimeout(REPORTING_INTERVAL))
+                {
+                    reportingTimer.reset();
+                    ReportToMaster(nodeManager.Nodes[0]);
+                }
+
                 Thread.Sleep(10);
             }
         }
 
-        public MasterNode(NodeManager nodeManager, ulong id, int interval)
+        private void ReportToMaster(SlaveNode slaveNode)
+        {
+            Log.Warning("ReportToMaster ... {0}", slaveNode.Measurements.Count);
+#if true
+            foreach (MeasurementPost post in slaveNode.Measurements)
+            {
+                Log.Warning("Measurement ... {0} ", post.ToString());
+            }
+#endif
+        }
+
+        public MasterNode(NodeManager nodeManager, int id, int interval)
         {
             this.nodeManager = nodeManager;
             this.id = id;
@@ -54,7 +80,7 @@ namespace MeshSim
             thread.Name = ToString();
         }
 
-        public MasterNode(NodeManager nodeManager):this(nodeManager, 1, 3000)
+        public MasterNode(NodeManager nodeManager):this(nodeManager, 0xFFFF, 3000)
         {
         }
 
@@ -84,7 +110,7 @@ namespace MeshSim
 
         override public string ToString()
         {
-            return string.Format("S{0:X4}", id);
+            return string.Format("M{0:X4}", id);
         }
     }
 }

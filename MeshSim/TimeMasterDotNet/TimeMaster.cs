@@ -4,27 +4,46 @@ namespace TimeMasterDotNet
 {
     public class TimeMaster
     {
-        private long ticks;
+        /// <summary>
+        /// ticks
+        /// </summary>
+        private long ticks0;
+        /// <summary>
+        /// ticks in ms based on RealTime
+        /// </summary>
+        private long ticks_ms;
+        /// <summary>
+        /// Base time in ms, keeps a refrence as a base-time
+        /// </summary>
+        public long BaseTime { get; set; }
 
         public TimeMaster(long offset = 0)
         {
-            ticks = DateTime.Now.Ticks + offset * TimeSpan.TicksPerMillisecond;
+            ticks0 = DateTime.Now.Ticks;
+            reset(offset);
+            BaseTime = ticks_ms;
         }
 
-        public static long getTime()
+        public void reset(long offset = 0)
         {
-            return DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
-        }
-
-        public void reset()
-        {
-            ticks = DateTime.Now.Ticks;
+            ticks_ms = Now() + offset;
         }
 
         public bool isTimeout(long timeout)
         {
-            long diff = (DateTime.Now.Ticks - ticks) / TimeSpan.TicksPerMillisecond;
+            long diff = Now() - ticks_ms;
             return diff > timeout;
+        }
+
+        public long NowAbs()
+        {
+            return (DateTime.Now.Ticks - ticks0) / TimeSpan.TicksPerMillisecond;
+        }
+
+        public long Now()
+        {
+            long diff = NowAbs() - BaseTime;
+            return diff;
         }
 
     }

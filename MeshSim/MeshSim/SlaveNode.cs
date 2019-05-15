@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,13 +12,16 @@ namespace MeshSim
 {
     public class SlaveNode
     {
+        private const int SAMPLING_INTERVAL = 5000;
+        private const int ADVERTISING_INTERVAL = 2000;
         private Thread thread;
         private int interval;
-        public ulong Id;
-        private TimeMaster timeMaster;
+        public int Id;
+        private TimeMaster advertisingTimer;
+        private TimeMaster samplingTimer;
 
-        List<MeasurementPost> measurementsList = new List<MeasurementPost>();
-        List<MeasurementPost> advertisementList = new List<MeasurementPost>();
+        private ConcurrentQueue<MeasurementPost> measurements = new ConcurrentQueue<MeasurementPost>();
+        private ConcurrentQueue<MeasurementPost> advertisements = new ConcurrentQueue<MeasurementPost>();
 
         /// <summary>
         /// Position on x axis
@@ -34,34 +38,42 @@ namespace MeshSim
         /// <summary>
         /// list of measurement for advertising
         /// </summary>
-        public List<MeasurementPost> AdvertisementList { get => advertisementList; set => advertisementList = value; }
+        public ConcurrentQueue<MeasurementPost> Advertisements { get => advertisements; set => advertisements = value; }
+        /// <summary>
+        /// list of all measurements
+        /// </summary>
+        public ConcurrentQueue<MeasurementPost> Measurements { get => measurements; set => measurements = value; }
 
         public void SlaveThread()
         {
             int startDelay = MeshSimTools.random.Next(5000);
             Thread.Sleep(startDelay);
 
-            Log.Information("SlaveNode {0} starts", ToString());
+            advertisingTimer = new TimeMaster();
+            samplingTimer = new TimeMaster();
+
+            Log.Information("{0} starts", ToString());
 
             while (thread.ThreadState == ThreadState.Running)
             {
-                if (timeMaster.isTimeout(interval))
+                if (advertisingTimer.isTimeout(ADVERTISING_INTERVAL))
                 {
-                    timeMaster.reset();
-                    Log.Information("SlaveNode {0} time to ... ", ToString());
-
-                    startMeasuring();
+                    advertisingTimer.reset();
                     advertiseNode();
+                }
 
-                    //ListenToAdvertisementsEvent(this.advertisementList);
+                if (samplingTimer.isTimeout(SAMPLING_INTERVAL))
+                {
+                    samplingTimer.reset();
+                    startMeasuring();
                 }
                 Thread.Sleep(10);
             }
         }
 
-        internal IEnumerable<ulong> getNeighbours()
+        internal IEnumerable<int> getNeighbours()
         {
-            List<ulong> ids = new List<ulong>();
+            List<int> ids = new List<int>();
 
             ids.Add(Id - 2);
             ids.Add(Id - 1);
@@ -72,39 +84,69 @@ namespace MeshSim
             return ids;
         }
 
-        public void ListenToAdvertisements(List<MeasurementPost> advertisementList)
+        public void ListenToAdvertisements(MeasurementPost[] posts)
         {
-            foreach (MeasurementPost post in advertisementList)
+            //Log.Information("[{0}] Listen to ... ", ToString());
+            foreach (MeasurementPost post in posts)
             {
-                if (post.Id != this.Id)
+                // Should listen to those position after
+                if (post.Id > this.Id)
                 {
-                    measurementsList.Add(post);
+                    //Log.Information("... {0}", post.ToString());
+                    if (!measurements.Contains(post))
+                    {
+                        measurements.Enqueue(post);
+                    }
                 }
             }
 
-            while (measurementsList.Count > 10)
+            // the node with id = 0, keep all measurements
+            if (Id > 0)
             {
-                measurementsList.RemoveAt(0);
+                lock (measurements)
+                {
+                    while (measurements.Count > 100)
+                    {
+                        MeasurementPost removedPost;
+                        if (measurements.TryDequeue(out removedPost))
+                        {
+
+                        }
+                    }
+                }
             }
         }
 
         private void advertiseNode()
         {
-            if (AdvertisementList.Count > 5) {
+            //Log.Information("advertiseNode {0}", ToString());
+
+            if (advertisements.IsEmpty)
+            { 
+                for (int i = 0; i < 5; i++)
+                {
+                    if (i < measurements.Count)
+                    {
+                        int index = MeshSimTools.random.Next(0, measurements.Count);
+                        advertisements.Enqueue(measurements.ElementAt(index));
+                    }
+                }
             }
         }
 
         private void startMeasuring()
         {
             int value = MeshSimTools.random.Next(0x0FFF);
-            measurementsList.Add(new MeasurementPost(Id, value));
+            MeasurementPost post = new MeasurementPost(Id, value, samplingTimer.Now());
+            Log.Information("Add post {0}", post.ToString());
+
+            Measurements.Enqueue(post);
         }
 
-        public SlaveNode(ulong id, int interval)
+        public SlaveNode(int id, int interval)
         {
             this.Id = id;
             this.interval = interval;
-            timeMaster = new TimeMaster();
 
             X = (int)id;
             Y = 0;
@@ -135,7 +177,19 @@ namespace MeshSim
 
         override public string ToString()
         {
-            return string.Format("S{0:X12}, {1}", Id, measurementsList.Count);
+            if (advertisingTimer == null)
+            {
+                return string.Format("S{0:X4}, {1}", Id, Measurements.Count);
+            }
+            return string.Format("S{0:X4}, {1}, {2}", Id, Measurements.Count, advertisingTimer.BaseTime);
+        }
+
+        public void SyncClock(long realTime)
+        {
+            if (advertisingTimer != null)
+            {
+                advertisingTimer.BaseTime = realTime;
+            }
         }
     }
 }
