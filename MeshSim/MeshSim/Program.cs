@@ -15,6 +15,7 @@ namespace MeshSim
         {
             Log.Logger = new LoggerConfiguration()
                 .WriteTo.Console(outputTemplate: "{Timestamp:HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.File("c:\\projects\\log.txt")
                 .CreateLogger();
 
             Log.Information("\nMeshSim Started ... @ {0}\n", DateTime.Now);

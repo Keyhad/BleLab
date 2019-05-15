@@ -61,11 +61,15 @@ namespace MeshSim
 
         private void ReportToMaster(SlaveNode slaveNode)
         {
-            Log.Warning("ReportToMaster ... {0}", slaveNode.Measurements.Count);
+            //Log.Warning("ReportToMaster ... {0}", slaveNode.Measurements.Count);
 #if true
             foreach (MeasurementPost post in slaveNode.Measurements)
             {
-                Log.Warning("Measurement ... {0} ", post.ToString());
+                if (!post.reported)
+                {
+                    Log.Warning("Measurement ... {0} ", post.ToString());
+                    post.reported = true;
+                }
             }
 #endif
         }

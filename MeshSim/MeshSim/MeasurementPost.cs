@@ -12,12 +12,14 @@ namespace MeshSim
         public int Id { get; set; }
         int value;
         long timeStamp;
+        internal bool reported;
 
         public MeasurementPost(int id, int value, long timeStamp)
         {
             this.timeStamp = timeStamp;
             this.Id = id;
             this.value = value;
+            this.reported = false;
         }
 
         override public string ToString()

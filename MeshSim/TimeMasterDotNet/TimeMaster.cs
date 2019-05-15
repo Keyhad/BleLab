@@ -21,7 +21,7 @@ namespace TimeMasterDotNet
         {
             ticks0 = DateTime.Now.Ticks;
             reset(offset);
-            BaseTime = ticks_ms;
+            BaseTime = NowAbs();
         }
 
         public void reset(long offset = 0)
@@ -29,7 +29,7 @@ namespace TimeMasterDotNet
             ticks_ms = Now() + offset;
         }
 
-        public bool isTimeout(long timeout)
+        public bool isTimeout(int timeout)
         {
             long diff = Now() - ticks_ms;
             return diff > timeout;

@@ -46,7 +46,7 @@ namespace MeshSim
 
         public void SlaveThread()
         {
-            int startDelay = MeshSimTools.random.Next(5000);
+            int startDelay = MeshSimTools.random.Next(1000, 5000);
             Thread.Sleep(startDelay);
 
             advertisingTimer = new TimeMaster();
@@ -138,7 +138,7 @@ namespace MeshSim
         {
             int value = MeshSimTools.random.Next(0x0FFF);
             MeasurementPost post = new MeasurementPost(Id, value, samplingTimer.Now());
-            Log.Information("Add post {0}", post.ToString());
+            //Log.Information("Add post {0}", post.ToString());
 
             Measurements.Enqueue(post);
         }
@@ -184,11 +184,11 @@ namespace MeshSim
             return string.Format("S{0:X4}, {1}, {2}", Id, Measurements.Count, advertisingTimer.BaseTime);
         }
 
-        public void SyncClock(long realTime)
+        public void SyncClock(long baseTime)
         {
-            if (advertisingTimer != null)
+            if (samplingTimer != null)
             {
-                advertisingTimer.BaseTime = realTime;
+                samplingTimer.BaseTime = baseTime;
             }
         }
     }
