@@ -29,16 +29,19 @@ namespace MeshSim
             SimulatingTimer = new TimeMaster();
             reportingTimer = new TimeMaster();
 
+            SimulatingTimer.reset(-SimulatingTimer.Now() % 1000);
+
             Log.Information("MasterNode {0} starts", ToString());
 
             while (thread.ThreadState == ThreadState.Running)
             {
                 if (SimulatingTimer.isTimeout(ADVERTISING_INTERVAL))
                 {
-                    SimulatingTimer.reset();
+                    long now = SimulatingTimer.Now();
+                    SimulatingTimer.reset(-SimulatingTimer.Now() % 1000);
                     foreach (SlaveNode slaveNode in nodeManager.Nodes)
                     {
-                        slaveNode.SyncClock(SimulatingTimer.Now());
+                        slaveNode.SyncClock(now);
                         foreach(int neighbour in slaveNode.getNeighbours())
                         {
                             if (neighbour >= 0 && neighbour < nodeManager.Nodes.Length)

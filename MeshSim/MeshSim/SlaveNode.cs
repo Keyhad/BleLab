@@ -12,8 +12,8 @@ namespace MeshSim
 {
     public class SlaveNode
     {
-        private const int SAMPLING_INTERVAL = 5000;
-        private const int ADVERTISING_INTERVAL = 1000;
+        private const int SAMPLING_INTERVAL = 10000;
+        private const int ADVERTISING_INTERVAL = 1700;
         private Thread thread;
         private int interval;
         public int Id;
@@ -137,7 +137,8 @@ namespace MeshSim
         private void startMeasuring()
         {
             int value = MeshSimTools.random.Next(0x0FFF);
-            MeasurementPost post = new MeasurementPost(Id, value, samplingTimer.Now());
+            long now = samplingTimer.Now();
+            MeasurementPost post = new MeasurementPost(Id, value, now - (now % 100));
             post.MainTimeStamp = MasterNode.GetInstance().SimulatingTimer.Now();
             //Log.Information("Add post {0}", post.ToString());
 

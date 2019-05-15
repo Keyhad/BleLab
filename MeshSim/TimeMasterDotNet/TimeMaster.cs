@@ -40,6 +40,10 @@ namespace TimeMasterDotNet
             return (DateTime.Now.Ticks - ticks0) / TimeSpan.TicksPerMillisecond;
         }
 
+        /// <summary>
+        /// Now in ms
+        /// </summary>
+        /// <returns></returns>
         public long Now()
         {
             long diff = Now0() - BaseTime;
