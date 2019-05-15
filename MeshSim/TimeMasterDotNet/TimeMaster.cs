@@ -21,7 +21,7 @@ namespace TimeMasterDotNet
         {
             ticks0 = DateTime.Now.Ticks;
             reset(offset);
-            BaseTime = NowAbs();
+            BaseTime = Now0();
         }
 
         public void reset(long offset = 0)
@@ -35,14 +35,14 @@ namespace TimeMasterDotNet
             return diff > timeout;
         }
 
-        public long NowAbs()
+        public long Now0()
         {
             return (DateTime.Now.Ticks - ticks0) / TimeSpan.TicksPerMillisecond;
         }
 
         public long Now()
         {
-            long diff = NowAbs() - BaseTime;
+            long diff = Now0() - BaseTime;
             return diff;
         }
 

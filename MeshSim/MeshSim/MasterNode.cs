@@ -12,31 +12,33 @@ namespace MeshSim
 {
     public class MasterNode
     {
-        private const int ADVERTISING_INTERVAL = 3000;
-        private const int REPORTING_INTERVAL = 10000;
+        private const int ADVERTISING_INTERVAL = 1000;
+        private const int REPORTING_INTERVAL = 7000;
 
         private Thread thread;
         private readonly int interval;
         private int id;
-        private TimeMaster simulatingTimer;
+        public TimeMaster SimulatingTimer { get; set; }
         private TimeMaster reportingTimer;
         private NodeManager nodeManager;
+        private static MasterNode instance;
 
         public void MasterThread()
         {
-            simulatingTimer = new TimeMaster();
+            instance = this;
+            SimulatingTimer = new TimeMaster();
             reportingTimer = new TimeMaster();
 
             Log.Information("MasterNode {0} starts", ToString());
 
             while (thread.ThreadState == ThreadState.Running)
             {
-                if (simulatingTimer.isTimeout(ADVERTISING_INTERVAL))
+                if (SimulatingTimer.isTimeout(ADVERTISING_INTERVAL))
                 {
-                    simulatingTimer.reset();
+                    SimulatingTimer.reset();
                     foreach (SlaveNode slaveNode in nodeManager.Nodes)
                     {
-                        slaveNode.SyncClock(simulatingTimer.BaseTime);
+                        slaveNode.SyncClock(SimulatingTimer.Now());
                         foreach(int neighbour in slaveNode.getNeighbours())
                         {
                             if (neighbour >= 0 && neighbour < nodeManager.Nodes.Length)
@@ -115,6 +117,11 @@ namespace MeshSim
         override public string ToString()
         {
             return string.Format("M{0:X4}", id);
+        }
+
+        public static MasterNode GetInstance()
+        {
+            return instance;
         }
     }
 }

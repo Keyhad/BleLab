@@ -13,7 +13,7 @@ namespace MeshSim
     public class SlaveNode
     {
         private const int SAMPLING_INTERVAL = 5000;
-        private const int ADVERTISING_INTERVAL = 2000;
+        private const int ADVERTISING_INTERVAL = 1000;
         private Thread thread;
         private int interval;
         public int Id;
@@ -138,6 +138,7 @@ namespace MeshSim
         {
             int value = MeshSimTools.random.Next(0x0FFF);
             MeasurementPost post = new MeasurementPost(Id, value, samplingTimer.Now());
+            post.MainTimeStamp = MasterNode.GetInstance().SimulatingTimer.Now();
             //Log.Information("Add post {0}", post.ToString());
 
             Measurements.Enqueue(post);
@@ -184,11 +185,11 @@ namespace MeshSim
             return string.Format("S{0:X4}, {1}, {2}", Id, Measurements.Count, advertisingTimer.BaseTime);
         }
 
-        public void SyncClock(long baseTime)
+        public void SyncClock(long now)
         {
             if (samplingTimer != null)
             {
-                samplingTimer.BaseTime = baseTime;
+                samplingTimer.BaseTime = samplingTimer.Now() - now;
             }
         }
     }
