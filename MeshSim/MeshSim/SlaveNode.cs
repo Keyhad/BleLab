@@ -103,15 +103,12 @@ namespace MeshSim
             // the node with id = 0, keep all measurements
             if (Id > 0)
             {
-                lock (measurements)
+                while (measurements.Count > 100)
                 {
-                    while (measurements.Count > 100)
+                    MeasurementPost removedPost;
+                    if (measurements.TryDequeue(out removedPost))
                     {
-                        MeasurementPost removedPost;
-                        if (measurements.TryDequeue(out removedPost))
-                        {
 
-                        }
                     }
                 }
             }
@@ -127,8 +124,22 @@ namespace MeshSim
                 {
                     if (i < measurements.Count)
                     {
-                        int index = MeshSimTools.random.Next(0, measurements.Count);
-                        advertisements.Enqueue(measurements.ElementAt(index));
+                        try
+                        {
+                            MeasurementPost post;
+                            if (measurements.TryDequeue(out post))
+                            {
+                                post.AdCounter++;
+                                if (post.AdCounter >= post.Id)
+                                {
+                                    advertisements.Enqueue(post);
+                                }
+                            }
+                        }
+                        catch
+                        {
+
+                        }
                     }
                 }
             }

@@ -13,6 +13,8 @@ namespace MeshSim
         int value;
         long timeStamp;
         public long MainTimeStamp { get; set; }
+        public int AdCounter { get; set; }
+
         internal bool reported;
 
         public MeasurementPost(int id, int value, long timeStamp)
@@ -21,11 +23,12 @@ namespace MeshSim
             this.Id = id;
             this.value = value;
             this.reported = false;
+            this.AdCounter = 0;
         }
 
         override public string ToString()
         {
-            return string.Format("M{0:X4}, {1}, {2}, {3}", Id, timeStamp, MainTimeStamp, value);
+            return string.Format("M{0:X4}, {1}, {2}, {3}", Id, timeStamp, AdCounter, value);
         }
 
         public int CompareTo(object obj)

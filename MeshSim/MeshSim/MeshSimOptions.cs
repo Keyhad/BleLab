@@ -25,7 +25,7 @@ namespace MeshSim
 
         [Value(0, 
             MetaName = "size", 
-            Default = 5,
+            Default = 50,
             HelpText = "Number of nodes.")]
         public int? Size { get; set; }
 
