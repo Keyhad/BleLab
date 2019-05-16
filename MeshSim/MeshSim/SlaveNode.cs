@@ -12,8 +12,8 @@ namespace MeshSim
 {
     public class SlaveNode
     {
-        private const int SAMPLING_INTERVAL = 10000;
-        private const int ADVERTISING_INTERVAL = 1700;
+        private const int SAMPLING_INTERVAL = 2000;
+        private const int ADVERTISING_INTERVAL = 2000;
         private Thread thread;
         private int interval;
         public int Id;
@@ -92,9 +92,9 @@ namespace MeshSim
                 // Should listen to those position after
                 if (post.Id > this.Id)
                 {
-                    //Log.Information("... {0}", post.ToString());
                     if (!measurements.Contains(post))
                     {
+                        //Log.Information("... {0}", post.ToString());
                         measurements.Enqueue(post);
                     }
                 }
@@ -130,7 +130,7 @@ namespace MeshSim
                             if (measurements.TryDequeue(out post))
                             {
                                 post.AdCounter++;
-                                if (post.AdCounter >= post.Id)
+                                //if (post.AdCounter >= post.Id)
                                 {
                                     advertisements.Enqueue(post);
                                 }
@@ -194,7 +194,7 @@ namespace MeshSim
             {
                 return string.Format("S{0:X4}, {1}", Id, Measurements.Count);
             }
-            return string.Format("S{0:X4}, {1}, {2}", Id, Measurements.Count, advertisingTimer.BaseTime);
+            return string.Format("S{0,-4}, {1}, {2}", Id, Measurements.Count, advertisingTimer.BaseTime);
         }
 
         public void SyncClock(long now)

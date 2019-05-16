@@ -12,8 +12,8 @@ namespace MeshSim
 {
     public class MasterNode
     {
-        private const int ADVERTISING_INTERVAL = 1000;
-        private const int REPORTING_INTERVAL = 7000;
+        private const int ADVERTISING_INTERVAL = 2000;
+        private const int REPORTING_INTERVAL = 1000;
 
         private Thread thread;
         private readonly int interval;

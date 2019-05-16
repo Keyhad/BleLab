@@ -23,12 +23,12 @@ namespace MeshSim
             this.Id = id;
             this.value = value;
             this.reported = false;
-            this.AdCounter = 0;
+            this.AdCounter = 2;
         }
 
         override public string ToString()
         {
-            return string.Format("M{0:X4}, {1}, {2}, {3}", Id, timeStamp, AdCounter, value);
+            return string.Format("M{0, -4}, {1}, {2}, {3}", Id, timeStamp, AdCounter, value);
         }
 
         public int CompareTo(object obj)
