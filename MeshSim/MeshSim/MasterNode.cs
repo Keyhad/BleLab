@@ -47,7 +47,7 @@ namespace MeshSim
                             if (neighbour >= 0 && neighbour < nodeManager.Nodes.Length)
                             {
                                 SlaveNode target = nodeManager.Nodes[neighbour];
-                                target.ListenToAdvertisements(slaveNode.Advertisements.ToArray());
+                                target.ListenToAdvertisements(slaveNode, slaveNode.Advertisements.ToArray());
                             }
                         }
                         slaveNode.Advertisements = new ConcurrentQueue<MeasurementPost>();

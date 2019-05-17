@@ -84,16 +84,17 @@ namespace MeshSim
             return ids;
         }
 
-        public void ListenToAdvertisements(MeasurementPost[] posts)
+        public void ListenToAdvertisements(SlaveNode node, MeasurementPost[] posts)
         {
             //Log.Information("[{0}] Listen to ... ", ToString());
             foreach (MeasurementPost post in posts)
             {
                 // Should listen to those position after
-                if (post.Id > this.Id)
+                if ((post.Id > this.Id) && (node.Id > this.Id))
                 {
                     if (!measurements.Contains(post))
                     {
+                        post.AdCounter++;
                         //Log.Information("... {0}", post.ToString());
                         measurements.Enqueue(post);
                     }
@@ -129,7 +130,7 @@ namespace MeshSim
                             MeasurementPost post;
                             if (measurements.TryDequeue(out post))
                             {
-                                post.AdCounter++;
+                                //post.AdCounter++;
                                 //if (post.AdCounter >= post.Id)
                                 {
                                     advertisements.Enqueue(post);
