@@ -30,10 +30,16 @@ namespace MeshSim
         public int? Size { get; set; }
 
         [Value(1,
-            MetaName = "interval",
-            Default = 1000,
-            HelpText = "Reporting interval in ms.")]
-        public int? Interval { get; set; }
+            MetaName = "adInterval",
+            Default = 5000,
+            HelpText = "Advertising interval in ms.")]
+        public int? AdInterval { get; set; }
+
+        [Value(2,
+            MetaName = "samInterval",
+            Default = 10000,
+            HelpText = "Sampling interval in ms.")]
+        public int? SamInterval { get; set; }
 
     }
 }

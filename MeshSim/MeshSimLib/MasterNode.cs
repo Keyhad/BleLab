@@ -33,13 +33,13 @@ namespace MeshSimLib
             //Log.Information("MasterNode {0} starts", ToString());
             Log.Information("#SlaveNodes: {0}", nodeManager.Nodes.Length);
             Log.Information("SlaveNode.ADVERTISING_MAX: {0}", SlaveNode.ADVERTISING_MAX);
-            Log.Information("SlaveNode.SAMPLING_INTERVAL: {0}", SlaveNode.SAMPLING_INTERVAL);
-            Log.Information("SlaveNode.ADVERTISING_INTERVAL: {0}", SlaveNode.ADVERTISING_INTERVAL);
+            Log.Information("SlaveNode.SAMPLING_INTERVAL: {0}", SlaveNode.SamInterval);
+            Log.Information("SlaveNode.ADVERTISING_INTERVAL: {0}", nodeManager.AdInterval);
             Log.Information("MasterNode.REPORTING_INTERVAL: {0}", REPORTING_INTERVAL);
 
             while (thread.ThreadState == ThreadState.Running)
             {
-                if (SimulatingTimer.isTimeout(SlaveNode.ADVERTISING_INTERVAL))
+                if (SimulatingTimer.isTimeout(nodeManager.AdInterval))
                 {
                     long now = SimulatingTimer.Now();
                     SimulatingTimer.reset(-SimulatingTimer.Now() % 1000);
@@ -63,10 +63,6 @@ namespace MeshSimLib
                 {
                     reportingTimer.reset();
                     ReportToMaster(nodeManager.Nodes[0]);
-                    //for (int i = 0; i < 1000; i += 100)
-                    //{
-                    //    ReportToMaster(nodeManager.Nodes[i]);
-                    //}
                 }
 
                 Thread.Sleep(10);
@@ -81,7 +77,7 @@ namespace MeshSimLib
             {
                 if (!post.reported)
                 {
-                    Log.Warning("Measurement ... {0} ", post.ToString());
+                    Log.Information(" ... {0} ", post.ToString());
                     post.reported = true;
                 }
             }

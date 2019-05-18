@@ -36,8 +36,9 @@ namespace MeshSim
         private static int RunOptionsAndReturnExitCode(MeshSimOptions opts)
         {
             int size = opts.Size.HasValue ? opts.Size.Value : 5;
-            int interval = opts.Interval.HasValue ? opts.Interval.Value : 1000;
-            NodeManager nodeManager = new NodeManager(size, interval);
+            int adInterval = opts.AdInterval.HasValue ? opts.AdInterval.Value : 1000;
+            int samInterval = opts.SamInterval.HasValue ? opts.SamInterval.Value : 3000;
+            NodeManager nodeManager = new NodeManager(size, adInterval, samInterval);
             MasterNode masterNode = new MasterNode(nodeManager);
             masterNode.Start();
             Console.ReadLine();

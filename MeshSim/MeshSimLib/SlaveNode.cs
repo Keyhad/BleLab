@@ -13,10 +13,8 @@ namespace MeshSimLib
     public class SlaveNode
     {
         public const int ADVERTISING_MAX = 10;
-        public const int SAMPLING_INTERVAL = 2500;
-        public const int ADVERTISING_INTERVAL = 200;
         private Thread thread;
-        private int interval;
+        public static int SamInterval { set;  get; }
         public int Id;
         private TimeMaster advertisingTimer;
         private TimeMaster samplingTimer;
@@ -88,7 +86,7 @@ namespace MeshSimLib
 
             while (thread.ThreadState == ThreadState.Running)
             {
-                if (samplingTimer.isTimeout(SAMPLING_INTERVAL))
+                if (samplingTimer.isTimeout(SamInterval))
                 {
                     samplingTimer.reset();
                     startMeasuring();
@@ -153,10 +151,9 @@ namespace MeshSimLib
             Measurements.Enqueue(post);
         }
 
-        public SlaveNode(int id, int interval)
+        public SlaveNode(int id)
         {
             this.Id = id;
-            this.interval = interval;
 
             X = (int)id;
             Y = 0;
