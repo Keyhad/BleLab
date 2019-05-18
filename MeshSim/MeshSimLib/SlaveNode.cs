@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 using Serilog;
 using TimeMasterDotNet;
 
-namespace MeshSim
+namespace MeshSimLib
 {
     public class SlaveNode
     {
-        private const int SAMPLING_INTERVAL = 2000;
-        private const int ADVERTISING_INTERVAL = 2000;
+        public const int ADVERTISING_MAX = 10;
+        public const int SAMPLING_INTERVAL = 2500;
+        public const int ADVERTISING_INTERVAL = 200;
         private Thread thread;
         private int interval;
         public int Id;
@@ -44,6 +45,37 @@ namespace MeshSim
         /// </summary>
         public ConcurrentQueue<MeasurementPost> Measurements { get => measurements; set => measurements = value; }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        public void CollectMeasurments()
+        {
+            //Log.Information("advertiseNode {0}", ToString());
+
+            //if ((Id % 100) != 0 && advertisements.IsEmpty)
+            if (advertisements.IsEmpty)
+            {
+                for (int i = 0; i < ADVERTISING_MAX; i++)
+                {
+                    if (i < measurements.Count)
+                    {
+                        try
+                        {
+                            MeasurementPost post;
+                            if (measurements.TryDequeue(out post))
+                            {
+                                advertisements.Enqueue(post);
+                            }
+                        }
+                        catch
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
         public void SlaveThread()
         {
             int startDelay = MeshSimTools.random.Next(1000, 5000);
@@ -52,16 +84,10 @@ namespace MeshSim
             advertisingTimer = new TimeMaster();
             samplingTimer = new TimeMaster();
 
-            Log.Information("{0} starts", ToString());
+            //Log.Information("{0} starts", ToString());
 
             while (thread.ThreadState == ThreadState.Running)
             {
-                if (advertisingTimer.isTimeout(ADVERTISING_INTERVAL))
-                {
-                    advertisingTimer.reset();
-                    advertiseNode();
-                }
-
                 if (samplingTimer.isTimeout(SAMPLING_INTERVAL))
                 {
                     samplingTimer.reset();
@@ -79,7 +105,6 @@ namespace MeshSim
             ids.Add(Id - 1);
             ids.Add(Id + 1);
             ids.Add(Id + 2);
-            ids.Add(Id + 3);
 
             return ids;
         }
@@ -90,7 +115,7 @@ namespace MeshSim
             foreach (MeasurementPost post in posts)
             {
                 // Should listen to those position after
-                if ((post.Id > this.Id) && (node.Id > this.Id))
+                if ((post.Id > this.Id) && (node.Id == this.Id+1))
                 {
                     if (!measurements.Contains(post))
                     {
@@ -107,40 +132,10 @@ namespace MeshSim
                 while (measurements.Count > 100)
                 {
                     MeasurementPost removedPost;
+
                     if (measurements.TryDequeue(out removedPost))
                     {
-
-                    }
-                }
-            }
-        }
-
-        private void advertiseNode()
-        {
-            //Log.Information("advertiseNode {0}", ToString());
-
-            if (advertisements.IsEmpty)
-            { 
-                for (int i = 0; i < 5; i++)
-                {
-                    if (i < measurements.Count)
-                    {
-                        try
-                        {
-                            MeasurementPost post;
-                            if (measurements.TryDequeue(out post))
-                            {
-                                //post.AdCounter++;
-                                //if (post.AdCounter >= post.Id)
-                                {
-                                    advertisements.Enqueue(post);
-                                }
-                            }
-                        }
-                        catch
-                        {
-
-                        }
+                        Log.Error("... {0} out {1}", ToString(), removedPost.ToString());
                     }
                 }
             }
@@ -148,10 +143,11 @@ namespace MeshSim
 
         private void startMeasuring()
         {
+            MeasurementPost post;
+
             int value = MeshSimTools.random.Next(0x0FFF);
             long now = samplingTimer.Now();
-            MeasurementPost post = new MeasurementPost(Id, value, now - (now % 100));
-            post.MainTimeStamp = MasterNode.GetInstance().SimulatingTimer.Now();
+            post = new MeasurementPost(Id, value, now - (now % 100));
             //Log.Information("Add post {0}", post.ToString());
 
             Measurements.Enqueue(post);
@@ -183,9 +179,11 @@ namespace MeshSim
 
         public void WaitToStop()
         {
+            Log.Information("WaitToStop {0}", ToString());
+
             while (thread.IsAlive)
             {
-                Thread.Sleep(10);
+                Thread.Sleep(100);
             }
         }
 

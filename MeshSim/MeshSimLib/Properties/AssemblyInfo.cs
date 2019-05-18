@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("TimeMasterDotNet")]
+[assembly: AssemblyTitle("MeshSimLib")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("TimeMasterDotNet")]
+[assembly: AssemblyProduct("MeshSimLib")]
 [assembly: AssemblyCopyright("Copyright ©  2019")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("fda16a21-9da6-4f26-8890-f607fb5cf482")]
+[assembly: Guid("e1a07467-b779-41d0-9d47-bf0241028583")]
 
 // Version information for an assembly consists of the following four values:
 //

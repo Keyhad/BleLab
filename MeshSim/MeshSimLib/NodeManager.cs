@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TimeMasterDotNet;
 
-namespace MeshSim
+namespace MeshSimLib
 {
     public class NodeManager
     {

@@ -8,12 +8,11 @@ using System.Threading.Tasks;
 using Serilog;
 using TimeMasterDotNet;
 
-namespace MeshSim
+namespace MeshSimLib
 {
     public class MasterNode
     {
-        private const int ADVERTISING_INTERVAL = 2000;
-        private const int REPORTING_INTERVAL = 1000;
+        public const int REPORTING_INTERVAL = 100;
 
         private Thread thread;
         private readonly int interval;
@@ -31,16 +30,22 @@ namespace MeshSim
 
             SimulatingTimer.reset(-SimulatingTimer.Now() % 1000);
 
-            Log.Information("MasterNode {0} starts", ToString());
+            //Log.Information("MasterNode {0} starts", ToString());
+            Log.Information("#SlaveNodes: {0}", nodeManager.Nodes.Length);
+            Log.Information("SlaveNode.ADVERTISING_MAX: {0}", SlaveNode.ADVERTISING_MAX);
+            Log.Information("SlaveNode.SAMPLING_INTERVAL: {0}", SlaveNode.SAMPLING_INTERVAL);
+            Log.Information("SlaveNode.ADVERTISING_INTERVAL: {0}", SlaveNode.ADVERTISING_INTERVAL);
+            Log.Information("MasterNode.REPORTING_INTERVAL: {0}", REPORTING_INTERVAL);
 
             while (thread.ThreadState == ThreadState.Running)
             {
-                if (SimulatingTimer.isTimeout(ADVERTISING_INTERVAL))
+                if (SimulatingTimer.isTimeout(SlaveNode.ADVERTISING_INTERVAL))
                 {
                     long now = SimulatingTimer.Now();
                     SimulatingTimer.reset(-SimulatingTimer.Now() % 1000);
                     foreach (SlaveNode slaveNode in nodeManager.Nodes)
                     {
+                        slaveNode.CollectMeasurments();
                         slaveNode.SyncClock(now);
                         foreach(int neighbour in slaveNode.getNeighbours())
                         {
@@ -58,6 +63,10 @@ namespace MeshSim
                 {
                     reportingTimer.reset();
                     ReportToMaster(nodeManager.Nodes[0]);
+                    //for (int i = 0; i < 1000; i += 100)
+                    //{
+                    //    ReportToMaster(nodeManager.Nodes[i]);
+                    //}
                 }
 
                 Thread.Sleep(10);
@@ -95,6 +104,8 @@ namespace MeshSim
 
         public void WaitToStop()
         {
+            Log.Information("WaitToStop {0}", ToString());
+
             while (thread.IsAlive)
             {
                 Thread.Sleep(10);

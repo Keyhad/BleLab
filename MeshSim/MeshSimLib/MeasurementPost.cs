@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TimeMasterDotNet;
 
-namespace MeshSim
+namespace MeshSimLib
 {
     public class MeasurementPost: IComparable, IEquatable<MeasurementPost>
     {
@@ -28,7 +28,7 @@ namespace MeshSim
 
         override public string ToString()
         {
-            return string.Format("M{0, -4}, {1}, {2}, {3}", Id, timeStamp, AdCounter, value);
+            return string.Format("M{0, -4}, {1, 8}, {2, 4}, {3, 5}", Id, timeStamp, AdCounter, value);
         }
 
         public int CompareTo(object obj)
